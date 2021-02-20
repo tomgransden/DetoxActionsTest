@@ -2,7 +2,7 @@ name: CI Detox iOS
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, synchronize]
 
 jobs:
   build:
