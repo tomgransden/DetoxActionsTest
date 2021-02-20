@@ -4,8 +4,8 @@
   "apps": {
     "ios": {
       "type": "ios.app",
-      "build": "cd ios && pod install && cd .. && xcodebuild -workspace ios/RNDetoxActions.xcworkspace/ -scheme RNDetoxActions -configuration Release",
-      "binaryPath": "SPECIFY_PATH_TO_YOUR_APP_BINARY"
+      "build": "export RCT_NO_LAUNCH_PACKAGER=true && cd ios && pod install && cd .. && xcodebuild -workspace ios/RNDetoxActions.xcworkspace/ -scheme RNDetoxActions -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
+      "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/RNDetoxActions.app"
     },
     "android": {
       "type": "android.apk",
