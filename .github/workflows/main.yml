@@ -36,7 +36,7 @@ jobs:
     - run: yarn detox test e2e --configuration ios --cleanup --record-logs failing --record-videos failing --take-screenshots failing
 
     - name: Archive test failure results
-        uses: actions/upload-artifact@v2
-        with:
+      uses: actions/upload-artifact@v2
+      with:
           name: test-failures
           path: artifacts
