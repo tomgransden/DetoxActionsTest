@@ -1,36 +1,55 @@
-# This is a basic workflow to help you get started with Actions
+name: CI Detox iOS
 
-name: CI
+on: [push]
 
-# Controls when the action will run. 
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# Allows you to run this workflow manually from the Actions tab
+workflow_dispatch:
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+    timeout-minutes: 15
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.4.app
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Node
+      uses: actions/setup-node@v1
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Cache node modules
+      uses: actions/cache@v1
+      id: cache
+      with:
+        path: node_modules
+        key: node-modules-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Rebuild detox
+      if: steps.cache.outputs.cache-hit == 'true'
+      run: yarn detox clean-framework-cache && yarn detox build-framework-cache
+
+    - name: Install Dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: yarn install
+
+    - name: Cache Pods
+      uses: actions/cache@v1
+      id: podcache
+      with:
+        path: ios/Pods
+        key: pods-${{ hashFiles('**/Podfile.lock') }}
+
+    - name: Update Pods
+      run: |
+        gem update cocoapods xcodeproj
+        cd ios && pod install && cd ..
+
+    - run: brew tap wix/brew
+    - run: brew install applesimutils
+    - run: yarn detox build e2e --configuration ios.sim.release
+    - run: yarn detox test e2e --configuration ios.sim.release --cleanup --debug-synchronization 200
