@@ -15,7 +15,7 @@ import {
   ScrollView,
   View,
   Text,
-  StatusBar,
+  StatusBar
 } from 'react-native';
 
 import {
@@ -29,6 +29,7 @@ import {
 declare const global: {HermesInternal: null | {}};
 
 const App = () => {
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
