@@ -20,7 +20,7 @@ const App = () => {
   return (
       <SafeAreaView>
       <Text testID="AppText">This is an app</Text>
-      <Pressable testID="Button" onPress={() => setVisible(visible)}>
+      <Pressable testID="Button" onPress={() => setVisible(!visible)}>
       <Text>Press me</Text>
       </Pressable>
       {visible ? <Text testID="VisibleText">Visible</Text> : null}
